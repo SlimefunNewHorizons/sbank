@@ -92,16 +92,12 @@ The resulting plugin is generated in `target/`.
 3. Start the server and make one controlled deposit and withdrawal.
 4. Check the new audit file before allowing regular traffic.
 
-## License and Upstream
+---
 
-This repository is a fork of [xenrivehub/sbank](https://github.com/xenrivehub/sbank). Keep upstream license notices intact when redistributing changes.
+## 📄 License & Upstream Attribution
 
-## ⚖️ Upstream Attribution & License / Licencia y Créditos
+This project is a sovereign fork maintained by [**JackStar6677-1**](https://github.com/JackStar6677-1) under [**DrakesCraft Labs**](https://github.com/DrakesCraft-Labs).
 
-- **Original Project / Upstream**: [xenrivehub/sbank](https://github.com/xenrivehub/sbank) (banking plugin for Vault; not a Slimefun addon).
-- **Port & Maintenance**: DrakesCraft Labs team (Compatibility for Paper / Purpur 1.21.11).
-- **License**: GPL-3.0 / MIT.
-- **Source Code**: [GitHub Repository](https://github.com/DrakesCraft-Labs/sbank)
-- **Support & Issues**: [GitHub Issues](https://github.com/DrakesCraft-Labs/sbank/issues) | [Discord](https://discord.gg/rv3vtXZTk7)
-
-*This project is an open-source derivative work maintained by DrakesCraft Labs under the terms of its original license. All original assets and concepts belong to their respective creators.*
+- **Original Project:** Created by the upstream authors and the open-source community.
+- **DrakesCraft Optimizations:** Modernized for Paper/Purpur 1.21.11+, Java 21, high concurrency, asynchronous safety, and exploit/duplication prevention.
+- **License:** Distributed under the original **GNU General Public License v3.0 (GPLv3)** (or original upstream license). See the [LICENSE](LICENSE) file for complete terms.
