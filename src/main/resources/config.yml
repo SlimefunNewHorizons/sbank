@@ -14,69 +14,68 @@ auto-save:
   save-interval: 15
   log-settings:
     enabled: true
-    message: "&6[DrakesBank]&a Todas las cuentas y deudas se guardaron correctamente."
+    message: "&6[DrakesBank]&a All accounts and debts were successfully saved."
 
 # Registro de auditoría JSON
 audit:
   enabled: true
   directory: "audit"
 
-default-bank-name: "Mi Banco"
+default-bank-name: "My Bank"
 bank-name-length: 16
 start-money: 0
 currency-symbol: "₯"
 
-# --- PENALIZACIÓN POR MUERTE -----------------------------
-# El dinero en el banco (depositado) está SEGURO siempre.
-# Opción A (Sugerencia #1): Desactivado cobro por muerte ambiental/caída.
+# --- DEATH PENALTY ----------------------------------------
+# Money deposited in the bank is always SAFE.
 lose-money-after-death: false
 after-death-percentage: 0
-after-death-message: '&c¡Moriste! Tu dinero en mano está seguro. Recuerda usar el banco (/sb) para mayor comodidad.'
+after-death-message: '&cYou died! Your money on hand is safe. Remember to use the bank (/sb) for convenience.'
 
 messages:
   prefix: '&6[&cDrakesBank&6] &r'
-  no-permission: '&cNo tienes permiso para hacer esto.'
-  plugin-reloaded: '&aPlugin recargado correctamente.'
-  no-bank-account: '&cNo tienes cuenta bancaria. Se creará automáticamente al reingresar.'
-  setting-bank-name: '&6El nombre del banco solo puede tener letras y números (máx. 16 caracteres). Escribe el nuevo nombre:'
-  bank-name-set: '&aNombre del banco cambiado a &e%bankname%.'
-  not-enough-money: '&cNo tienes suficiente dinero para completar esta acción.'
-  deposit-success: '&aDepositaste &e%money%₯ &aen tu banco.'
-  withdraw-success: '&aRetiraste &e%money%₯ &ade tu banco.'
-  enter-amount: '&6Ingresa la cantidad a procesar:'
-  custom-amount-not-set: '&cSesión cancelada.'
-  bank-name-not-set: '&cSaliste sin cambiar el nombre.'
-  bank-name-invalid: '&cNombre inválido. Solo letras y números. (escribe ''close'' para cancelar)'
-  loan-amount: '&6Ingresa el monto del préstamo. Mínimo &e%minloan%₯ &6y Máximo &e%maxloan%₯. &o(escribe ''cancel'' para cancelar)'
-  loan-agreement: '&6Se te cobrará &c%interest%₯ de interés cada &c%term% horas. ¿Confirmas el préstamo de &e%amount%₯?'
-  loan-success: '&aPréstamo aprobado: &e%amount%₯. &aPagarás &c%interest%₯ de interés cada &c%term% horas. Usa &e/sb debt &apara ver tu deuda.'
-  loan-failed: '&cProceso de préstamo cancelado.'
-  loan-paid: '&aPagaste &e%amount%₯ &ahacia tu deuda.'
-  loan-cancelled: '&cProceso de préstamo cancelado.'
-  loan-disabled: '&cLos préstamos están desactivados.'
-  loan-amount-error: '&cEl monto debe estar entre &e%minloan%₯ &cy &e%maxloan%₯.'
-  debt-deducted: '&aSe dedujo &e%money%₯ &ade tu banco para pagar tu deuda.'
-  debt-cant-paid: '&c¡No tienes suficiente dinero para pagar tu deuda! Tu deuda aumentó en &e%money%₯.'
-  debt-payment-success: '&aPagaste &e%money%₯ &ahacia tu deuda.'
-  debt-paid: '&a¡Deuda saldada! Ya puedes solicitar otro préstamo.'
-  invalid-amount: '&cCantidad inválida.'
-  less-then-daily: '&cDebes pagar al menos &e%daily%₯ &cpara abono mínimo.'
+  no-permission: '&cYou do not have permission to do this.'
+  plugin-reloaded: '&aPlugin reloaded successfully.'
+  no-bank-account: '&cYou do not have a bank account. It will be created automatically upon reconnecting.'
+  setting-bank-name: '&6Bank name can only contain letters and numbers (max 16 chars). Enter the new name:'
+  bank-name-set: '&aBank name changed to &e%bankname%.'
+  not-enough-money: '&cYou do not have enough money to complete this action.'
+  deposit-success: '&aDeposited &e%money%₯ &ainto your bank.'
+  withdraw-success: '&aWithdrew &e%money%₯ &afrom your bank.'
+  enter-amount: '&6Enter the amount to process:'
+  custom-amount-not-set: '&cSession cancelled.'
+  bank-name-not-set: '&cExited without changing bank name.'
+  bank-name-invalid: '&cInvalid name. Only letters and numbers. (type ''close'' to cancel)'
+  loan-amount: '&6Enter the loan amount. Minimum &e%minloan%₯ &6and Maximum &e%maxloan%₯. &o(type ''cancel'' to cancel)'
+  loan-agreement: '&6You will be charged &c%interest%₯ interest every &c%term% hours. Do you confirm the loan of &e%amount%₯?'
+  loan-success: '&aLoan approved: &e%amount%₯. &aYou will pay &c%interest%₯ interest every &c%term% hours. Use &e/sb debt &ato view your debt.'
+  loan-failed: '&cLoan process cancelled.'
+  loan-paid: '&aPaid &e%amount%₯ &atowards your debt.'
+  loan-cancelled: '&cLoan process cancelled.'
+  loan-disabled: '&cLoans are disabled.'
+  loan-amount-error: '&cThe amount must be between &e%minloan%₯ &cand &e%maxloan%₯.'
+  debt-deducted: '&aDeducted &e%money%₯ &afrom your bank to pay your debt.'
+  debt-cant-paid: '&cYou do not have enough money to pay your debt! Your debt increased by &e%money%₯.'
+  debt-payment-success: '&aPaid &e%money%₯ &atowards your debt.'
+  debt-paid: '&aDebt fully paid! You can now apply for another loan.'
+  invalid-amount: '&cInvalid amount.'
+  less-then-daily: '&cYou must pay at least &e%daily%₯ &cfor minimum payment.'
   loan-agree:
-  - '&c----------- Detalles del Préstamo -----------'
-  - '&6Préstamo total: &e%total_debt%₯'
-  - '&6Pago cada &e%payment_interval% horas&6: &c%every_payment%₯'
-  - '&6Usa &e/sb debt &6para ver y pagar tu deuda.'
-  - '&6Si no pagas a tiempo, tu deuda aumentará en &c%every_payment%₯.'
-  - '&c• El pago se toma automáticamente de tu BANCO.'
-  - '&c---------------------------------------------'
+  - '&c----------- Loan Details -----------'
+  - '&6Total Loan: &e%total_debt%₯'
+  - '&6Payment every &e%payment_interval% hours&6: &c%every_payment%₯'
+  - '&6Use &e/sb debt &6to view and pay your debt.'
+  - '&6If not paid on time, debt increases by &c%every_payment%₯.'
+  - '&c• Payment is automatically deducted from your BANK.'
+  - '&c-------------------------------------'
 
 gui:
-  bank-home-title: '&6DrakesBank — Tu Cuenta'
-  deposit-page-title: '&6Depositar Dinero'
-  withdraw-page-title: '&6Retirar Dinero'
-  loan-page-title: '&6Solicitar Préstamo'
-  debt-page-title: '&6Mi Deuda'
-  agree-page-title: '&6Confirmar Préstamo'
+  bank-home-title: '&6DrakesBank — Your Account'
+  deposit-page-title: '&6Deposit Money'
+  withdraw-page-title: '&6Withdraw Money'
+  loan-page-title: '&6Request Loan'
+  debt-page-title: '&6My Debt'
+  agree-page-title: '&6Confirm Loan'
 
 # --- PRÉSTAMOS --------------------------------------------
 # Requiere permiso: sbank.loan
@@ -98,7 +97,7 @@ interest:
   interest-rate: 0.5 # bajado de 4: al 4% diario compuesto el saldo se duplicaba cada ~18 dias
   interest-time: 24 # cada 24 horas
   last-interest-date: '2026-09-12 20:40:55'
-  interest-message: '&a+&e%interest%₯ &ade interés acreditados a tu banco.'
+  interest-message: '&a+&e%interest%₯ &ainterest credited to your bank.'
 
 # Reserva que respalda los prestamos. Sin fondos aqui, un prestamo no puede crear dinero nuevo.
 economy-reserve:
@@ -114,7 +113,7 @@ wealth-tax:
   maximum-charge-per-cycle: 250000.0
   exempt-usernames: []
   last-run: '2026-09-13 00:19:07'
-  message: '&6[DrakesBank] &eImpuesto bancario aplicado: &c-%money%'
+  message: '&6[DrakesBank] &eBank tax applied: &c-%money%'
   tiers:
     first:
       # 0.5% sobre lo que exceda el saldo protegido, hasta 1.000.000.

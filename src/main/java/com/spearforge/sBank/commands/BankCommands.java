@@ -99,14 +99,14 @@ public class BankCommands implements CommandExecutor {
         try {
             monto = Double.parseDouble(args[2].replace(",", ""));
         } catch (NumberFormatException e) {
-            sender.sendMessage("[sBank] Monto invalido: " + args[2]);
+            sender.sendMessage("[sBank] Invalid amount: " + args[2]);
             return;
         }
         if (monto < 0) {
-            sender.sendMessage("[sBank] El monto no puede ser negativo.");
+            sender.sendMessage("[sBank] Amount cannot be negative.");
             return;
         }
-        String motivo = args.length > 3 ? String.join(" ", java.util.Arrays.copyOfRange(args, 3, args.length)) : "sin motivo";
+        String motivo = args.length > 3 ? String.join(" ", java.util.Arrays.copyOfRange(args, 3, args.length)) : "no reason";
 
         // Si el jugador esta conectado el saldo vivo es el de la cache; si no, el de la base.
         Bank bank = SBank.getBanks().get(objetivo);
@@ -114,12 +114,12 @@ public class BankCommands implements CommandExecutor {
             try {
                 bank = SBank.getDb().getBank(objetivo);
             } catch (java.sql.SQLException e) {
-                sender.sendMessage("[sBank] Error leyendo la base: " + e.getMessage());
+                sender.sendMessage("[sBank] Error reading database: " + e.getMessage());
                 return;
             }
         }
         if (bank == null) {
-            sender.sendMessage("[sBank] " + objetivo + " no tiene cuenta bancaria.");
+            sender.sendMessage("[sBank] " + objetivo + " does not have a bank account.");
             return;
         }
         double antes = bank.getBalance();

@@ -242,7 +242,7 @@ public final class SBank extends JavaPlugin {
         getConfig().set("wealth-tax.maximum-charge-per-cycle", 250_000D);
         getConfig().set("wealth-tax.exempt-usernames", new ArrayList<String>());
         getConfig().set("wealth-tax.last-run", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(LocalDateTime.now()));
-        getConfig().set("wealth-tax.message", "&6[DrakesBank] &eImpuesto bancario aplicado: &c-%money%");
+        getConfig().set("wealth-tax.message", "&6[DrakesBank] &eBank tax applied: &c-%money%");
         getConfig().set("wealth-tax.tiers.first.up-to", 1_000_000D);
         getConfig().set("wealth-tax.tiers.first.rate-percent", 0.5D);
         getConfig().set("wealth-tax.tiers.second.up-to", 5_000_000D);
