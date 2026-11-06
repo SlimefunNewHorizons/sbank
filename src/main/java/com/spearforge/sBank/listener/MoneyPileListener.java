@@ -51,7 +51,7 @@ public class MoneyPileListener implements Listener {
         }
 
         e.setCancelled(true);
-        Bank pBank = SBank.getBanks().get(player.getName());
+        Bank pBank = SBank.bankOf(player);
         double bankBefore = pBank.getBalance();
         double wallet = SBank.getEcon().getBalance(player);
         pBank.setBalance(bankBefore + amount);

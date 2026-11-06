@@ -15,6 +15,11 @@ public class Bank {
     private String uuid;
     private String bankname;
     private double balance;
+    private String modality = Modality.SURVIVAL;
+
+    public String getKey() {
+        return Modality.key(username, modality);
+    }
 
     public String getUsername() {
         return username;

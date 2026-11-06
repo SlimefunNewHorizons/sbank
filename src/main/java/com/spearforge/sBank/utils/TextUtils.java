@@ -72,7 +72,7 @@ public class TextUtils {
             replacements.put("%every_payment%", MiscUtils.formatBalance(debt.getDaily()) + currencySymbol);
             if (debt.getLastPaymentDate() != null) {
                 replacements.put("%last_payment_date%", debt.getLastPaymentDate());
-                replacements.put("%time_to_next_deduction%", DebtModule.getTimeUntilNextPayment(debt.getUsername()));
+                replacements.put("%time_to_next_deduction%", DebtModule.getTimeUntilNextPayment(debt.getKey()));
             }
             replacements.put("%payment_interval%", String.valueOf(SBank.getPlugin().getConfig().getInt("loan.debt-time")));
         }

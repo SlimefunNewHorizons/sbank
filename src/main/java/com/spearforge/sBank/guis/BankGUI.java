@@ -18,7 +18,7 @@ public class BankGUI {
 
 
     public static Inventory getBankHomePage(Player player){
-        Bank pBank = SBank.getBanks().get(player.getName());
+        Bank pBank = SBank.bankOf(player);
         Inventory bankGUI = Bukkit.createInventory(player, 27, ChatColor.translateAlternateColorCodes('&', SBank.getPlugin().getConfig().getString("gui.bank-home-title")));
 
         if (pBank != null){

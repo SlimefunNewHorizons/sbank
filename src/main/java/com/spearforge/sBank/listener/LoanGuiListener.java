@@ -48,7 +48,7 @@ public class LoanGuiListener implements Listener {
             return;
         }
 
-        if (SBank.getDebts().containsKey(player.getName())) {
+        if (SBank.getDebts().containsKey(SBank.key(player))) {
             TextUtils.sendMessageWithPrefix(player, SBank.getPlugin().getConfig().getString("messages.active-debt"));
             player.closeInventory();
             return;
@@ -99,7 +99,7 @@ public class LoanGuiListener implements Listener {
 
     private void agreeLoan(Player player) {
         Debt debt = loanAgree.get(player.getName());
-        if (debt == null || SBank.getDebts().containsKey(player.getName())) {
+        if (debt == null || SBank.getDebts().containsKey(SBank.key(player))) {
             TextUtils.sendMessageWithPrefix(player, SBank.getPlugin().getConfig().getString("messages.active-debt"));
             disagreeLoan(player);
             return;
@@ -119,7 +119,7 @@ public class LoanGuiListener implements Listener {
         String dateFormatted = dateTime.format(formatter);
         debt.setLastPaymentDate(dateFormatted);
 
-        SBank.getDebts().put(player.getName(), debt);
+        SBank.getDebts().put(SBank.key(player), debt);
         List<String> messages = TextUtils.replacePlaceholders(SBank.getPlugin().getConfig().getStringList("messages.loan-agree"), null, debt, null);
 
         for (String message : messages) {
@@ -130,17 +130,17 @@ public class LoanGuiListener implements Listener {
             SBank.getDb().setDebtToDatabase(debt);
         } catch (SQLException e) {
             EconomyReserve.restoreLoan(loan);
-            SBank.getDebts().remove(player.getName());
+            SBank.getDebts().remove(SBank.key(player));
             TextUtils.sendMessageWithPrefix(player, SBank.getPlugin().getConfig().getString("messages.transaction-failed"));
             SBank.getPlugin().getLogger().severe("[ERROR] No se pudo persistir el préstamo de " + player.getName());
             return;
         }
 
-        double bankBefore = SBank.getBanks().get(player.getName()).getBalance();
-        SBank.getBanks().get(player.getName()).setBalance(bankBefore + loan);
+        double bankBefore = SBank.bankOf(player).getBalance();
+        SBank.bankOf(player).setBalance(bankBefore + loan);
         double wallet = SBank.getEcon().getBalance(player);
         SBank.getAuditLogger().record("LOAN_GRANTED", player.getName(), player.getUniqueId().toString(), loan,
-                wallet, wallet, bankBefore, SBank.getBanks().get(player.getName()).getBalance(), "total-debt=" + debt.getTotal());
+                wallet, wallet, bankBefore, SBank.bankOf(player).getBalance(), "total-debt=" + debt.getTotal());
 
         loanAgree.remove(player.getName());
         loanAmount.remove(player.getName());

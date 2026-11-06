@@ -19,9 +19,9 @@ public class DebtGui {
 
         Inventory loanGUI;
 
-        if (SBank.getDebts().containsKey(player.getName())) {
+        if (SBank.getDebts().containsKey(SBank.key(player))) {
             loanGUI = Bukkit.createInventory(player, 9, ChatColor.translateAlternateColorCodes('&', SBank.getPlugin().getConfig().getString("gui.debt-page-title")));
-            Debt pDebt = SBank.getDebts().get(player.getName());
+            Debt pDebt = SBank.getDebts().get(SBank.key(player));
             loanGUI.setItem(2, createButton("gui.loan.details", pDebt));
             loanGUI.setItem(4, createButton("gui.loan.pay", pDebt));
             loanGUI.setItem(6, createButton("gui.close-button", pDebt));

@@ -68,34 +68,34 @@ public class DebtModule {
 
     public static void payDebt(Player player, Double amount) {
         if (!isValidPayment(player, amount)) return;
-        double bankBefore = SBank.getBanks().get(player.getName()).getBalance();
-        double debtBefore = SBank.getDebts().get(player.getName()).getRemaining();
+        double bankBefore = SBank.bankOf(player).getBalance();
+        double debtBefore = SBank.getDebts().get(SBank.key(player)).getRemaining();
         double payment = Math.min(amount, debtBefore);
-        SBank.getDebts().get(player.getName()).setRemaining(debtBefore - payment);
-        SBank.getBanks().get(player.getName()).setBalance(bankBefore - payment);
+        SBank.getDebts().get(SBank.key(player)).setRemaining(debtBefore - payment);
+        SBank.bankOf(player).setBalance(bankBefore - payment);
         double wallet = SBank.getEcon().getBalance(player);
         SBank.getAuditLogger().record("DEBT_AUTO_PAYMENT", player.getName(), player.getUniqueId().toString(), payment,
-                wallet, wallet, bankBefore, SBank.getBanks().get(player.getName()).getBalance(), "remaining-debt=" + (debtBefore - payment));
+                wallet, wallet, bankBefore, SBank.bankOf(player).getBalance(), "remaining-debt=" + (debtBefore - payment));
         EconomyReserve.credit(payment);
 
-        if (SBank.getDebts().get(player.getName()).getRemaining() <= 0){
-            TextUtils.sendMessageWithPrefix(player, SBank.getPlugin().getConfig().getString("messages.debt-paid").replaceAll("%money%", MiscUtils.formatBalance(SBank.getDebts().get(player.getName()).getTotal())));
-            SBank.getDebts().remove(player.getName());
+        if (SBank.getDebts().get(SBank.key(player)).getRemaining() <= 0){
+            TextUtils.sendMessageWithPrefix(player, SBank.getPlugin().getConfig().getString("messages.debt-paid").replaceAll("%money%", MiscUtils.formatBalance(SBank.getDebts().get(SBank.key(player)).getTotal())));
+            SBank.getDebts().remove(SBank.key(player));
             try {
-                SBank.getDb().removeDebt(player.getName());
+                SBank.getDb().removeDebt(player.getName(), com.spearforge.sBank.model.Modality.of(player.getWorld().getName()));
             } catch (SQLException ex) {
                 SBank.getPlugin().getLogger().warning("An error occurred while removing the debt from the database");
             }
         }else{
             TextUtils.sendMessageWithPrefix(player, SBank.getPlugin().getConfig().getString("messages.debt-payment-success").replaceAll("%money%", MiscUtils.formatBalance(amount)));
-            DebtModule.updateLastPaymentDate(player.getName());
-            persistDebt(player.getName());
+            DebtModule.updateLastPaymentDate(SBank.key(player));
+            persistDebt(SBank.key(player));
         }
     }
 
     public static void payDebtFromBalance(Player player, Double amount){
         if (!isValidPayment(player, amount)) return;
-        double debtBefore = SBank.getDebts().get(player.getName()).getRemaining();
+        double debtBefore = SBank.getDebts().get(SBank.key(player)).getRemaining();
         double payment = Math.min(amount, debtBefore);
         double walletBefore = SBank.getEcon().getBalance(player);
         EconomyResponse response = SBank.getEcon().withdrawPlayer(player, payment);
@@ -104,32 +104,32 @@ public class DebtModule {
                     "messages.transaction-failed", "&cThe transaction could not be completed."));
             return;
         }
-        SBank.getDebts().get(player.getName()).setRemaining(debtBefore - payment);
+        SBank.getDebts().get(SBank.key(player)).setRemaining(debtBefore - payment);
         DebtGuiListener.getDebtPayment().remove(player.getName());
-        double bank = SBank.getBanks().get(player.getName()).getBalance();
+        double bank = SBank.bankOf(player).getBalance();
         SBank.getAuditLogger().record("DEBT_WALLET_PAYMENT", player.getName(), player.getUniqueId().toString(), payment,
                 walletBefore, SBank.getEcon().getBalance(player), bank, bank, "remaining-debt=" + (debtBefore - payment));
         EconomyReserve.credit(payment);
 
-        if (SBank.getDebts().get(player.getName()).getRemaining() <= 0){
-            TextUtils.sendMessageWithPrefix(player, SBank.getPlugin().getConfig().getString("messages.debt-paid").replaceAll("%money%", MiscUtils.formatBalance(SBank.getDebts().get(player.getName()).getTotal())));
-            SBank.getDebts().remove(player.getName());
+        if (SBank.getDebts().get(SBank.key(player)).getRemaining() <= 0){
+            TextUtils.sendMessageWithPrefix(player, SBank.getPlugin().getConfig().getString("messages.debt-paid").replaceAll("%money%", MiscUtils.formatBalance(SBank.getDebts().get(SBank.key(player)).getTotal())));
+            SBank.getDebts().remove(SBank.key(player));
             try {
-                SBank.getDb().removeDebt(player.getName());
+                SBank.getDb().removeDebt(player.getName(), com.spearforge.sBank.model.Modality.of(player.getWorld().getName()));
             } catch (SQLException ex) {
                 SBank.getPlugin().getLogger().warning("An error occurred while removing the debt from the database for " + player.getName());
             }
         }else{
             TextUtils.sendMessageWithPrefix(player, SBank.getPlugin().getConfig().getString("messages.debt-payment-success").replaceAll("%money%", MiscUtils.formatBalance(amount)));
-            DebtModule.updateLastPaymentDate(player.getName());
-            persistDebt(player.getName());
+            DebtModule.updateLastPaymentDate(SBank.key(player));
+            persistDebt(SBank.key(player));
         }
 
     }
 
     private static boolean isValidPayment(Player player, Double amount) {
         return player != null && amount != null && Double.isFinite(amount) && amount > 0
-                && SBank.getDebts().containsKey(player.getName());
+                && SBank.getDebts().containsKey(SBank.key(player));
     }
 
     private static void persistDebt(String username) {

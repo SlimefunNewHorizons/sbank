@@ -17,6 +17,11 @@ public class Debt {
     private double remaining;
     private double daily;
     private String lastPaymentDate;
+    private String modality = Modality.SURVIVAL;
+
+    public String getKey() {
+        return Modality.key(username, modality);
+    }
 
     public void setTotal(double total) {
         this.total = MoneyMath.normalize(total);

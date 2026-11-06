@@ -9,6 +9,7 @@ import com.spearforge.sBank.database.SQLiteConnection;
 import com.spearforge.sBank.listener.*;
 import com.spearforge.sBank.model.Bank;
 import com.spearforge.sBank.model.Debt;
+import com.spearforge.sBank.model.Modality;
 import com.spearforge.sBank.modules.DebtModule;
 import com.spearforge.sBank.modules.EconomyReserve;
 import com.spearforge.sBank.modules.InterestModule;
@@ -125,6 +126,32 @@ public final class SBank extends JavaPlugin {
         }
     }
 
+    public static String key(Player player) {
+        return Modality.key(player.getName(), Modality.of(player.getWorld().getName()));
+    }
+
+    /** Cuenta del jugador en la modalidad de su mundo actual; se carga o crea al primer uso. */
+    public static Bank bankOf(Player player) {
+        return banks.computeIfAbsent(key(player), k -> {
+            String modality = Modality.of(player.getWorld().getName());
+            try {
+                if (db.hasBank(player.getName(), modality)) {
+                    return db.getBank(player.getName(), modality);
+                }
+                Bank bank = new Bank();
+                bank.setUsername(player.getName());
+                bank.setUuid(player.getUniqueId().toString());
+                bank.setModality(modality);
+                bank.setBankname(plugin.getConfig().getString("default-bank-name"));
+                bank.setBalance(plugin.getConfig().getDouble("start-money"));
+                db.setBankInDatabase(bank);
+                return bank;
+            } catch (SQLException e) {
+                throw new IllegalStateException("No se pudo cargar la cuenta " + k, e);
+            }
+        });
+    }
+
     private boolean setupEconomy() {
         if (getServer().getPluginManager().getPlugin("Vault") == null) {
             return false;
@@ -158,16 +185,16 @@ public final class SBank extends JavaPlugin {
             @Override
             public void run() {
                 for (Debt debt : new ArrayList<>(debts.values())) {
-                    if (DebtModule.hasDefinedHoursPassed(debt.getUsername())){
-                        if (Bukkit.getPlayer(debt.getUsername()) != null){
-                            Player player = Bukkit.getPlayer(debt.getUsername());
+                    if (DebtModule.hasDefinedHoursPassed(debt.getKey())){
+                        Player player = Bukkit.getPlayerExact(debt.getUsername());
+                        if (player != null && key(player).equals(debt.getKey())){
                             double payment = Math.min(debt.getDaily(), debt.getRemaining());
-                            if (banks.get(player.getName()).getBalance() < payment) {
+                            if (bankOf(player).getBalance() < payment) {
                                 debt.setRemaining(debt.getRemaining() + debt.getDaily());
-                                DebtModule.updateLastPaymentDate(debt.getUsername());
+                                DebtModule.updateLastPaymentDate(debt.getKey());
                                 double wallet = econ.getBalance(player);
                                 auditLogger.record("DEBT_LATE_PENALTY", player.getName(), player.getUniqueId().toString(), debt.getDaily(),
-                                        wallet, wallet, banks.get(player.getName()).getBalance(), banks.get(player.getName()).getBalance(),
+                                        wallet, wallet, bankOf(player).getBalance(), bankOf(player).getBalance(),
                                         "remaining-debt=" + debt.getRemaining());
                                 TextUtils.sendMessageWithPrefix(player, getConfig().getString("messages.debt-cant-paid").replaceAll("%money%", MiscUtils.formatBalance(debt.getDaily())));
                             } else {
@@ -176,15 +203,17 @@ public final class SBank extends JavaPlugin {
                        } else {
                            Bank bank = null;
                            try {
-                               bank = db.getBank(debt.getUsername());
+                               bank = banks.containsKey(debt.getKey()) ? banks.get(debt.getKey()) : db.getBank(debt.getUsername(), debt.getModality());
                            } catch (SQLException e) {
                                getLogger().warning("An error occurred while getting bank for debt payment for " + debt.getUsername());
                            }
-                           assert bank != null;
+                           if (bank == null) {
+                               continue;
+                           }
                             double payment = Math.min(debt.getDaily(), debt.getRemaining());
                             if (bank.getBalance() < payment) {
                              debt.setRemaining(debt.getRemaining() + debt.getDaily());
-                             DebtModule.updateLastPaymentDate(debt.getUsername());
+                             DebtModule.updateLastPaymentDate(debt.getKey());
                              auditLogger.record("DEBT_LATE_PENALTY", debt.getUsername(), debt.getUuid(), debt.getDaily(),
                                      0, 0, bank.getBalance(), bank.getBalance(), "offline remaining-debt=" + debt.getRemaining());
                          } else {
@@ -197,8 +226,8 @@ public final class SBank extends JavaPlugin {
                              try {
                                  db.updateBankInDatabase(bank);
                                  if (debt.getRemaining() <= 0) {
-                                     debts.remove(debt.getUsername());
-                                     db.removeDebt(debt.getUsername());
+                                     debts.remove(debt.getKey());
+                                     db.removeDebt(debt.getUsername(), debt.getModality());
                                  } else {
                                      db.updateDebtInDatabase(debt);
                                  }

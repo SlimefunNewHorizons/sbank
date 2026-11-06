@@ -88,7 +88,7 @@ public class PlayerBankChatListener implements Listener {
                 Pattern pattern = Pattern.compile("[^a-z0-9 ]", Pattern.CASE_INSENSITIVE);
                 Matcher matcher = pattern.matcher(bankName.toString());
                 if (!matcher.find()) {
-                    SBank.getBanks().get(playerName).setBankname(bankName.toString());
+                    SBank.bankOf(player).setBankname(bankName.toString());
                     TextUtils.sendMessageWithPrefix(player, SBank.getPlugin().getConfig().getString("messages.bank-name-set")
                             .replaceAll("%bankname%", bankName.toString()));
                     BankGuiListener.getSetName().remove(playerName);
@@ -119,7 +119,7 @@ public class PlayerBankChatListener implements Listener {
             return;
         }
 
-        Bank bank = SBank.getBanks().get(playerName);
+        Bank bank = SBank.bankOf(player);
         double bankBefore = bank.getBalance();
         EconomyResponse response = SBank.getEcon().withdrawPlayer(player, amount);
         BankGuiListener.getCustomDepAmount().remove(playerName);
@@ -143,7 +143,7 @@ public class PlayerBankChatListener implements Listener {
 
     private void handleWithdraw(Player player, String message) {
         String playerName = player.getName();
-        Bank bank = SBank.getBanks().get(playerName);
+        Bank bank = SBank.bankOf(player);
         double amount = resolverCantidad(message, bank.getBalance());
         if (amount < 0) {
             TextUtils.sendMessageWithPrefix(player, SBank.getPlugin().getConfig().getString("messages.invalid-amount"));
@@ -179,7 +179,7 @@ public class PlayerBankChatListener implements Listener {
 
     private void handlePhysicalWithdraw(Player player, String message) {
         String playerName = player.getName();
-        Bank bank = SBank.getBanks().get(playerName);
+        Bank bank = SBank.bankOf(player);
         double amount = resolverCantidad(message, bank.getBalance());
         if (amount < 0) {
             TextUtils.sendMessageWithPrefix(player, SBank.getPlugin().getConfig().getString("messages.invalid-amount"));
@@ -221,7 +221,7 @@ public class PlayerBankChatListener implements Listener {
 
     private void handleDebtPayment(Player player, String message) {
         String playerName = player.getName();
-        double remaining = SBank.getDebts().get(playerName).getRemaining();
+        double remaining = SBank.getDebts().get(SBank.key(player)).getRemaining();
         // "todo" aqui es saldar la deuda, pero sin pasarse de lo que lleva encima.
         double amount = resolverCantidad(message,
                 Math.min(remaining, SBank.getEcon().getBalance(player)));
@@ -229,7 +229,7 @@ public class PlayerBankChatListener implements Listener {
             TextUtils.sendMessageWithPrefix(player, SBank.getPlugin().getConfig().getString("messages.invalid-amount"));
             return;
         }
-        double minimumPayment = Math.min(SBank.getDebts().get(playerName).getDaily(), remaining);
+        double minimumPayment = Math.min(SBank.getDebts().get(SBank.key(player)).getDaily(), remaining);
         if (amount >= minimumPayment && SBank.getEcon().getBalance(player) >= amount) {
             DebtModule.payDebtFromBalance(player, amount);
         } else {

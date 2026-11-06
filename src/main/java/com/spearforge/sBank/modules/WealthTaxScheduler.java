@@ -58,7 +58,7 @@ public final class WealthTaxScheduler {
                 bank.setBalance(before - charge);
                 SBank.getDb().updateBankInDatabase(bank);
                 if (online != null) {
-                    SBank.getBanks().put(online.getName(), bank);
+                    SBank.getBanks().put(bank.getKey(), bank);
                     TextUtils.sendMessageWithPrefix(online, SBank.getPlugin().getConfig()
                             .getString("wealth-tax.message", "&6Impuesto bancario: &e%money%")
                             .replace("%money%", MiscUtils.formatBalance(charge)));

@@ -32,7 +32,7 @@ public class PlayerListener implements Listener {
                     if (balance > 0) {
                         EconomyResponse response = SBank.getEcon().withdrawPlayer(e.getEntity(), cut);
                         if (response.transactionSuccess()) {
-                            double bank = SBank.getBanks().containsKey(p.getName()) ? SBank.getBanks().get(p.getName()).getBalance() : 0;
+                            double bank = SBank.bankOf(p).getBalance();
                             SBank.getAuditLogger().record("DEATH_PENALTY", p.getName(), p.getUniqueId().toString(), cut,
                                     balance, SBank.getEcon().getBalance(p), bank, bank, "environmental-death");
                             TextUtils.sendMessageWithPrefix(p, SBank.getPlugin().getConfig().getString("after-death-message").replaceAll("%money%", MiscUtils.formatBalance(cut)));
@@ -46,34 +46,30 @@ public class PlayerListener implements Listener {
     @SneakyThrows
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent e) {
-        Player p = e.getPlayer();
-        String defaultBankName = SBank.getPlugin().getConfig().getString("default-bank-name");
-        double startMoney = SBank.getPlugin().getConfig().getDouble("start-money");
-        if (!SBank.getDb().hasBank(p.getName())){
-            Bank bank = new Bank();
-            bank.setUsername(p.getName());
-            bank.setUuid(p.getUniqueId().toString());
-            bank.setBankname(defaultBankName);
-            bank.setBalance(startMoney);
-            SBank.getBanks().put(p.getName(), bank);
-            SBank.getDb().setBankInDatabase(bank);
-        } else {
-            Bank bank = SBank.getDb().getBank(p.getName());
-            SBank.getBanks().put(p.getName(), bank);
-        }
+        SBank.bankOf(e.getPlayer());
+    }
+
+    /** Carga la cuenta de la modalidad destino para que el placeholder y la GUI la tengan lista. */
+    @EventHandler
+    public void onWorldChange(org.bukkit.event.player.PlayerChangedWorldEvent e) {
+        SBank.bankOf(e.getPlayer());
     }
 
     @SneakyThrows
     @EventHandler
     public void onPlayerLeave(PlayerQuitEvent e){
         Player p = e.getPlayer();
-        Bank bank = SBank.getBanks().get(p.getName());
-        Debt debt = SBank.getDebts().get(p.getName());
-
-        SBank.getDb().updateBankInDatabase(bank);
-        SBank.getBanks().remove(p.getName());
-        if (debt != null) {
-            SBank.getDb().updateDebtInDatabase(debt);
+        String prefix = p.getName() + "@";
+        for (Bank bank : new java.util.ArrayList<>(SBank.getBanks().values())) {
+            if (bank.getKey().startsWith(prefix)) {
+                SBank.getDb().updateBankInDatabase(bank);
+                SBank.getBanks().remove(bank.getKey());
+            }
+        }
+        for (Debt debt : SBank.getDebts().values()) {
+            if (debt.getKey().startsWith(prefix)) {
+                SBank.getDb().updateDebtInDatabase(debt);
+            }
         }
 
         List<Map<String, ?>> maps = Arrays.asList(

@@ -22,7 +22,7 @@ public class AdminGUI {
         Inventory inv = Bukkit.createInventory(null, InventoryType.WORKBENCH, bank.getUsername());
 
         inv.setItem(5, createButton("gui.admin-bank-details", bank, null));
-        Debt debt = SBank.getDebts().get(bank.getUsername());
+        Debt debt = SBank.getDebts().get(bank.getKey());
         if (debt != null) {
             inv.setItem(0, createButton("gui.loan.admin-details", null, debt));
         } else {

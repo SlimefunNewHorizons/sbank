@@ -19,7 +19,7 @@ public class PlayerLoanChatListener implements Listener {
         if (!LoanGuiListener.getLoanAmount().containsKey(player.getName())) {
             return;
         }
-        if (SBank.getDebts().containsKey(player.getName())) {
+        if (SBank.getDebts().containsKey(SBank.key(player))) {
             LoanGuiListener.getLoanAmount().remove(player.getName());
             LoanGuiListener.getLoanAgree().remove(player.getName());
             TextUtils.sendMessageWithPrefix(player, SBank.getPlugin().getConfig().getString("messages.active-debt"));
@@ -62,6 +62,7 @@ public class PlayerLoanChatListener implements Listener {
         debt.setRemaining(totalDebt);
         debt.setUuid(player.getUniqueId().toString());
         debt.setUsername(player.getName());
+        debt.setModality(com.spearforge.sBank.model.Modality.of(player.getWorld().getName()));
         debt.setDaily(totalDebt / SBank.getPlugin().getConfig().getInt("loan.loan-term"));
         LoanGuiListener.getLoanAgree().put(player.getName(), debt);
         player.openInventory(DebtGui.openAgreementPage(player, debt));

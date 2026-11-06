@@ -73,7 +73,8 @@ public class BankCommands implements CommandExecutor {
                         }
                     } else if (Bukkit.getOfflinePlayer(args[0]) != null){ // check if player has a bank
                         if (player.hasPermission("sbank.admin")) {
-                            Bank pBank = SBank.getDb().getBank(args[0]);
+                            String[] cuenta = cuenta(args[0]);
+                            Bank pBank = SBank.getDb().getBank(cuenta[0], cuenta[1]);
                             if (pBank != null){
                                 player.openInventory(AdminGUI.openPlayerBankGUI(pBank));
                             } else {
@@ -93,8 +94,21 @@ public class BankCommands implements CommandExecutor {
         return true;
     }
 
+    /** "Nombre@modalidad"; sin modalidad usa el mundo actual del jugador o survival si esta desconectado. */
+    private static String[] cuenta(String arg) {
+        int at = arg.indexOf('@');
+        if (at > 0) {
+            return new String[]{arg.substring(0, at), arg.substring(at + 1).toLowerCase()};
+        }
+        Player online = Bukkit.getPlayerExact(arg);
+        return new String[]{arg, online != null
+                ? com.spearforge.sBank.model.Modality.of(online.getWorld().getName())
+                : com.spearforge.sBank.model.Modality.SURVIVAL};
+    }
+
     private void ajusteAdministrativo(CommandSender sender, String[] args) {
-        String objetivo = args[1];
+        String[] cuenta = cuenta(args[1]);
+        String objetivo = cuenta[0];
         double monto;
         try {
             monto = Double.parseDouble(args[2].replace(",", ""));
@@ -109,10 +123,10 @@ public class BankCommands implements CommandExecutor {
         String motivo = args.length > 3 ? String.join(" ", java.util.Arrays.copyOfRange(args, 3, args.length)) : "no reason";
 
         // Si el jugador esta conectado el saldo vivo es el de la cache; si no, el de la base.
-        Bank bank = SBank.getBanks().get(objetivo);
+        Bank bank = SBank.getBanks().get(com.spearforge.sBank.model.Modality.key(objetivo, cuenta[1]));
         if (bank == null) {
             try {
-                bank = SBank.getDb().getBank(objetivo);
+                bank = SBank.getDb().getBank(objetivo, cuenta[1]);
             } catch (java.sql.SQLException e) {
                 sender.sendMessage("[sBank] Error reading database: " + e.getMessage());
                 return;
