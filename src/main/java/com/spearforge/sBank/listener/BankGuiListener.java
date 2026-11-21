@@ -9,6 +9,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryDragEvent;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -32,6 +33,7 @@ public class BankGuiListener implements Listener {
 
 
         if (e.getView().getTitle().equalsIgnoreCase(homeTitle)){
+            e.setCancelled(true);
 
             Player player = (Player) e.getWhoClicked();
 
@@ -46,7 +48,6 @@ public class BankGuiListener implements Listener {
             );
 
             if (e.getCurrentItem() != null && e.getCurrentItem().getItemMeta() != null && e.getCurrentItem().getItemMeta().getDisplayName() != null) {
-                e.setCancelled(true);
                 if (e.getClick().isLeftClick()){
                     if (e.getCurrentItem().getItemMeta().getDisplayName().equals(homeButtons.get(0))){
                         player.closeInventory();
@@ -72,6 +73,13 @@ public class BankGuiListener implements Listener {
                     }
                 }
             }
+        }
+    }
+
+    @EventHandler
+    public void onDragBankGui(InventoryDragEvent e) {
+        if (e.getView().getTitle().equalsIgnoreCase(homeTitle)) {
+            e.setCancelled(true);
         }
     }
 

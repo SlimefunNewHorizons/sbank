@@ -13,6 +13,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.inventory.ItemStack;
 
 import java.sql.SQLException;
@@ -180,5 +181,15 @@ public class LoanGuiListener implements Listener {
         }
     }
 
+    @EventHandler
+    public void onDragLoanGui(InventoryDragEvent e) {
+        String loanTitle = SBank.getPlugin().getConfig().getString("gui.loan-page-title");
+        String agreeTitle = SBank.getPlugin().getConfig().getString("gui.agree-page-title");
+        String viewTitle = e.getView().getTitle();
+        if ((loanTitle != null && viewTitle.equalsIgnoreCase(ChatColor.translateAlternateColorCodes('&', loanTitle)))
+                || (agreeTitle != null && viewTitle.equals(ChatColor.translateAlternateColorCodes('&', agreeTitle)))) {
+            e.setCancelled(true);
+        }
+    }
 
 }

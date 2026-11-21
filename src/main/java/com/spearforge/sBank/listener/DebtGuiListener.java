@@ -8,6 +8,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryDragEvent;
 
 import java.util.HashMap;
 
@@ -37,6 +38,14 @@ public class DebtGuiListener implements Listener {
                     player.closeInventory();
                 }
             }
+        }
+    }
+
+    @EventHandler
+    public void onDragDebtGui(InventoryDragEvent e) {
+        String title = SBank.getPlugin().getConfig().getString("gui.debt-page-title");
+        if (title != null && e.getView().getTitle().equals(ChatColor.translateAlternateColorCodes('&', title))) {
+            e.setCancelled(true);
         }
     }
 
